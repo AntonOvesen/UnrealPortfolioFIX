@@ -16,6 +16,10 @@ public:
 		float Speed;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 		float AvoidanceRadius;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+		float newMovePower;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "XD")
+		int neighbours;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weights")
 		float AlignmentWeight;
@@ -35,16 +39,14 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	void GetCommonData();
+	UFUNCTION(BlueprintNativeEvent)
+		void GetCommonData();
+	void GetCommonData_Implementation();
 
 	void Move(FVector movement);
 
 	// Behavior.
 	FVector CombinedBehavior();
-
-	UFUNCTION(BlueprintNativeEvent)
-		void Test123();
-	void Test123_Implementation();
 
 	UFUNCTION(BlueprintNativeEvent)
 		FVector AlignmentBehavior();

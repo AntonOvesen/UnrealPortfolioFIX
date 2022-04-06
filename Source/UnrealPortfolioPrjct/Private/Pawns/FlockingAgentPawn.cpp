@@ -6,7 +6,7 @@
 // Sets default values
 AFlockingAgentPawn::AFlockingAgentPawn()
 {
- 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 }
@@ -15,7 +15,9 @@ AFlockingAgentPawn::AFlockingAgentPawn()
 void AFlockingAgentPawn::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	avoidRadiusSquared = AvoidanceRadius * AvoidanceRadius;
+	lastMove = FVector::UpVector;
 }
 
 // Called every frame
@@ -36,15 +38,22 @@ void AFlockingAgentPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 }
 
-void AFlockingAgentPawn::GetCommonData()
+void AFlockingAgentPawn::GetCommonData_Implementation()
 {
 	// Get array of type this inside overlap collider.
 	GetOverlappingActors(Actors, AFlockingAgentPawn::StaticClass());
+
+
+	/*neighbours = 0;
+	for (AActor* actor : Actors) {
+		neighbours++;
+	}*/
 }
 
 void AFlockingAgentPawn::Move(FVector movement)
 {
-	SetActorRotation(movement.Rotation(), ETeleportType::None);
+	FRotator MyRotator = FRotationMatrix::MakeFromZ(movement).Rotator();
+	SetActorRotation(MyRotator, ETeleportType::None);
 
 	SetActorLocation(this->GetActorLocation() + (movement * Speed));
 }
@@ -62,16 +71,21 @@ FVector AFlockingAgentPawn::CombinedBehavior()
 
 	if (move == FVector::ZeroVector) {
 		// Mf doesnt work yet.
+		neighbours = 1;
 		return lastMove;
 	}
 
+	if (lastMove != FVector::ZeroVector) {
+		move = lastMove + ((move / 100) * newMovePower);
+	}
+
+	neighbours = 0;
+
 	lastMove = move;
 
+	move.Normalize();
+
 	return move;
-}
-
-void AFlockingAgentPawn::Test123_Implementation() {
-
 }
 
 FVector AFlockingAgentPawn::AlignmentBehavior_Implementation()
@@ -83,7 +97,9 @@ FVector AFlockingAgentPawn::AlignmentBehavior_Implementation()
 		direction += actor->GetActorUpVector();
 	}
 
-	return direction.GetSafeNormal(0.001f);
+	direction.Normalize();
+
+	return direction;
 }
 
 FVector AFlockingAgentPawn::CohesionBehavior_Implementation()
@@ -106,12 +122,16 @@ FVector AFlockingAgentPawn::CohesionBehavior_Implementation()
 		target -= this->GetActorLocation();
 	}
 
-	return target.GetSafeNormal(0.001f);
+	target.Normalize();
+
+	return target;
 }
 
 FVector AFlockingAgentPawn::AvoidanceBehavior_Implementation()
 {
 	FVector partialMove = FVector::ZeroVector;
+
+	int nAvoid = 0;
 
 	for (AActor* actor : Actors) {
 
@@ -120,8 +140,22 @@ FVector AFlockingAgentPawn::AvoidanceBehavior_Implementation()
 		if (moveAway.SizeSquared() < avoidRadiusSquared) {
 
 			partialMove += moveAway;
+			nAvoid++;
 		}
 	}
 
-	return partialMove.GetSafeNormal(0.001f);
+	if (nAvoid > 0) {
+		partialMove /= nAvoid;
+	}
+
+	partialMove.Normalize();
+
+	return partialMove;
+
+	//FVector safeNormal = partialMove.Normalize();
+
+	//neighbours = safeNormal.Size() * 100;
+	//neighbours = nAvoid;
+
+	
 }
