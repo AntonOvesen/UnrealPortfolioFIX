@@ -53,6 +53,7 @@ void AFlockingAgentPawn::GetCommonData_Implementation()
 void AFlockingAgentPawn::Move(FVector movement)
 {
 	FRotator MyRotator = FRotationMatrix::MakeFromZ(movement).Rotator();
+	FQuat xd = MyRotator.Quaternion();
 	SetActorRotation(MyRotator, ETeleportType::None);
 
 	SetActorLocation(this->GetActorLocation() + (movement * Speed));
@@ -87,6 +88,8 @@ FVector AFlockingAgentPawn::CombinedBehavior()
 	lastMove = move;
 
 	move.Normalize();
+
+	FVector move2 = move.GetSafeNormal(0.001f);
 
 	return move;
 }
