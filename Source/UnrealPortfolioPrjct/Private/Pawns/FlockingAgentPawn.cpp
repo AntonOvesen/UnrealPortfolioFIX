@@ -72,6 +72,9 @@ FVector AFlockingAgentPawn::CombinedBehavior()
 	if (move == FVector::ZeroVector) {
 		// Mf doesnt work yet.
 		neighbours = 1;
+		
+		lastMove.Normalize();
+		lastMove *= Speed;
 		return lastMove;
 	}
 
