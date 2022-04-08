@@ -38,8 +38,12 @@ public:
 protected:
 
 	UFUNCTION(BlueprintNativeEvent)
+		void ExternalTickRun();
+	void ExternalTickRun_Implementation();
+
+	UFUNCTION(BlueprintNativeEvent)
 		void AddActor(AActor* actor);
-	void AddActor_Implementation(AActor* actor); 
+	void AddActor_Implementation(AActor* actor);
 
 	UFUNCTION(BlueprintNativeEvent)
 		void RemoveActor(AActor* actor);
