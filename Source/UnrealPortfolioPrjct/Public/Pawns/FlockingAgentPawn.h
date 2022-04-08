@@ -36,6 +36,15 @@ public:
 	AFlockingAgentPawn();
 
 protected:
+
+	UFUNCTION(BlueprintNativeEvent)
+		void AddActor(AActor* actor);
+	void AddActor_Implementation(AActor* actor); 
+
+	UFUNCTION(BlueprintNativeEvent)
+		void RemoveActor(AActor* actor);
+	void RemoveActor_Implementation(AActor* actor);
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 

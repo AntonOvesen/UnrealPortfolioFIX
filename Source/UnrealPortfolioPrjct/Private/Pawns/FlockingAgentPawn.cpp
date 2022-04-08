@@ -8,6 +8,18 @@ AFlockingAgentPawn::AFlockingAgentPawn()
 {
 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+}
+
+void AFlockingAgentPawn::AddActor_Implementation(AActor* actor)
+{
+	if (!Actors.Contains(actor))
+		Actors.Add(actor);
+}
+
+void AFlockingAgentPawn::RemoveActor_Implementation(AActor* actor)
+{
+	if (Actors.Contains(actor))
+		Actors.Remove(actor);
 
 }
 
@@ -25,7 +37,7 @@ void AFlockingAgentPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	GetCommonData();
+	//GetCommonData();
 
 	Move(CombinedBehavior());
 
@@ -73,7 +85,7 @@ FVector AFlockingAgentPawn::CombinedBehavior()
 	if (move == FVector::ZeroVector) {
 		// Mf doesnt work yet.
 		neighbours = 1;
-		
+
 		lastMove.Normalize();
 		lastMove *= Speed;
 		return lastMove;
@@ -163,5 +175,5 @@ FVector AFlockingAgentPawn::AvoidanceBehavior_Implementation()
 	//neighbours = safeNormal.Size() * 100;
 	//neighbours = nAvoid;
 
-	
+
 }
