@@ -10,6 +10,11 @@ AFlockingAgentPawn::AFlockingAgentPawn()
 	PrimaryActorTick.bCanEverTick = true;
 }
 
+void AFlockingAgentPawn::ExternalTickRun_Implementation()
+{
+	Move(CombinedBehavior());
+}
+
 void AFlockingAgentPawn::AddActor_Implementation(AActor* actor)
 {
 	if (!Actors.Contains(actor))
@@ -39,7 +44,7 @@ void AFlockingAgentPawn::Tick(float DeltaTime)
 
 	//GetCommonData();
 
-	Move(CombinedBehavior());
+	//Move(CombinedBehavior());
 
 }
 
